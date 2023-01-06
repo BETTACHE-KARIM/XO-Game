@@ -2,187 +2,229 @@
 #include <iostream>
 #include <string>
 using namespace std;
+
 class Player{
-    string name, xo;
-   
+        string name, xo;
+        double score  = 0;
     public:
-     double score = 0;
-    void setProp(string val, string v_xo){
-        name = val;
-        xo = v_xo;
-    }
-    string getname(){
-        return name ;
-     
-    }
-        string getxo(){
-        return xo ;
-     
-    }
-    
-    bool play(string ta[3][3], int index){
+        Player(string name ="", string xo=""):name(name), xo(xo){}
+        Player(Player &p):name(p.name), xo(p.xo){}
 
-        if(index < 4 && ta[0][index-1] == "_" ){
-           
-            ta[0][index-1] = xo;
-            return true;
+        string getXo(){
+            return xo;
         }
-        else if(index < 7 && ta[1][index-4]== "_" ){
-            
-            ta[1][index-4] = xo;
-            return true;
+        string getName(){
+            return xo;
         }
-         else if (index < 10 &&ta[2][index-7]== "_"){
-            
-            ta[2][index-7] = xo;
-            return true;
+        friend ostream& operator<<(ostream& out, Player &player){
+            out<<"Player name ("<< player.xo<<"): "<<player.name<<", Score: "<< player.score<<"."<<endl;
+            return out;
         }
+        friend istream& operator>>(istream& in, Player &player){
+            cout<<"Player name: ";cin>>player.name;
+            cout<<"X or O: ";cin>>player.xo;
+            return cin;
+        }
+};
 
-       
-        return false;
+class GameXO{
+        Player *P1, *P2;
+        bool turn, endGame;
+        string table[3][3]  = {"_", "_", "_", "_", "_", "_", "_", "_", "_"};
         
-    }
-
 
     
-    bool checkWin(string ta[3][3]){
-        
-       for(int i =0 ; i <3 ;i++){
-            if(ta[i][i] == xo && ta[i][i+1] == xo && ta[i][i+2] == xo) return true;
-        }
-        for(int i =0 ; i <3 ;i++){
-            if(ta[i][i] == xo && ta[i+1][i] == xo && ta[i+2][i] == xo) return true;
-        }
-
-        if(ta[0][0] == xo && ta[1][1] == xo && ta[2][2] == xo) return true;
-        if(ta[0][2] == xo && ta[1][1] == xo && ta[2][0] == xo) return true;
-        
-
-
-        
-        return false;
-    }
-
-    static bool checkDraw(string ta[3][3]){
-        for (size_t i = 0; i < 3; i++)
-        {
-            for (size_t j = 0; j < 3; j++)
+        bool checkDraw(){
+            for (size_t i = 0; i < 3; i++)
             {
-                if(ta[i][j] == "_"){
-                    return false;
-                };
+                for (size_t j = 0; j < 3; j++)
+                {
+                    if(table[i][j] == "_"){
+                        return false;
+                    };
+                }
+                
+            }
+            return true;
+        }
+        
+        Player& getPlayer(){
+            return turn==true ? *P1 :  *P2;
+        }
+
+        bool Q_terminer(){
+            string term;
+            cout<<"Leave the game (Y/N)? ";cin>>term;
+            return((term =="Y"  || term =="y"  ) && term !=" " ) ;
+        } 
+        void Table_Init(){
+            for (size_t i = 0; i < 3; i++)
+            {
+                for (size_t j = 0; j < 3; j++)
+                {
+                    table[i][j] = "_";
+                }
+                
             }
             
         }
-        return true;
-    } 
-    static void printTable(string ta[3][3]){
-        cout<<"|---------------|---------------|---------------|"<<endl;
-        for(int i =0 ; i <3 ;i++){
-   
-            cout<<"|\t\t"<<ta[i][0]<<"\t\t|\t\t"<<ta[i][1]<<"\t\t|\t\t"<<ta[i][2]<<"\t\t|"<<endl;
-            cout<<"|---------------|---------------|---------------|"<<endl;
+
+
+    public:
+        GameXO(Player &p1, Player &p2){
+            turn = false;
+            P1 = new Player(p1);
+            P2 = new Player(p2);
+            cout<<"-----The game has started!"<<endl;
+            cout<<p1;
+            cout<<p2;
+            
+            
+            
         }
-       
-    }
+        ~GameXO(){
+            delete P1, P2;
+        }
+
+
+        
+        bool Play_Turn(){
+            int index ;
+            Player p = getPlayer();
+            turn = !turn;
+
+            while(true){
+            cout<<p.getName()<<" Turn: ";cin>>index;
+            
+            
+            if(index < 4 && table[0][index-1] == "_" ){
+                table[0][index-1] = p.getXo();
+                break;
+            }
+            else if(index < 7 && table[1][index-4]== "_" ){
+                table[1][index-4] = p.getXo();
+                break;
+            }
+            else if (index < 10 &&table[2][index-7]== "_"){
+                table[2][index-7] = p.getXo();
+                break;
+            }
+            cout<<"Bad choice"<<endl;
+           
+            
+            }
+        }
+
+        
+        void Win_Check(){
+            endGame = NULL;
+            if(checkDraw()) {
+                if(Q_terminer())endGame = true;
+                else endGame = false;
+            } ;
+            Player p = getPlayer();
+
+            for(int i =0 ; i <3 ;i++){
+                if(table[i][i] == p.getXo() && table[i][i+1] == p.getXo() && table[i][i+2] == p.getXo()) { 
+                    if(Q_terminer())endGame = true;
+                    else endGame = false;
+                }
+            }
+            for(int i =0 ; i <3 ;i++){
+                if(table[i][i] == p.getXo() && table[i+1][i] == p.getXo() && table[i+2][i] == p.getXo()) { 
+                    if(Q_terminer())endGame = true;
+                    else endGame = false;
+                }
+            }
+
+            if(table[0][0] == p.getXo() && table[1][1] == p.getXo() && table[2][2] == p.getXo()) { 
+                    if(Q_terminer())endGame = true;
+                    else endGame = false;
+            }
+            if(table[0][2] == p.getXo() && table[1][1] == p.getXo() && table[2][0] == p.getXo()) { 
+                    if(Q_terminer())endGame = true;
+                    else endGame = false;
+            }
+
+
+
+        
+            
+        }
+      
+        bool End_Game(){
+            if(endGame != NULL) {
+                Table_Init();
+                if(endGame) return true;
+                else return false;
+            }
+            return NULL;
+        }
+        void Table_Print(){
+            cout<<"|---------------|---------------|---------------|"<<endl;
+            for(int i =0 ; i <3 ;i++){
+    
+                cout<<"|\t\t"<<table[i][0]<<"\t\t|\t\t"<<table[i][1]<<"\t\t|\t\t"<<table[i][2]<<"\t\t|"<<endl;
+                cout<<"|---------------|---------------|---------------|"<<endl;
+            }
+        
+        }
     
 };
 
 
 
-void initialize(string ta[3][3]){
-    for (size_t i = 0; i < 3; i++)
-    {
-        for (size_t j = 0; j < 3; j++)
-        {
-            ta[i][j] = "_";
-        }
-        
-    }
-    
-}
 
 
 
 
-bool Q_terminer(){
-    string term;
-     cout<<"Tapez no pour terminer: ";cin>>term;
-     return(term =="no") ;
-}
+
 
 int main() {
     
+  
+
+
+
     Player p1, p2;
-    string name, win;
-    int position, res;
-    string table[3][3]  = {"_", "_", "_", "_", "_", "_", "_", "_", "_"};
-    
-
-    cout << "Name of First Player: ";cin>>name;
-    p1.setProp(name, "X");
-    cout << "Name of Second Player: ";cin>>name;
-    p2.setProp(name, "O");
-
-
+    cin>>p1;
+    cin>>p2;
+    GameXO game(p1, p2);
     while( true) {
+        system("cls");
         cout << "************ Playing *************"<<endl;
-        Player::printTable(table);
-        position = -1;
-        while(true){
-            cout<<p1.getname()<<" Where to play? ";cin>>position;
-            
-            if( p1.play(table, position) ) break;
-          
-
+        game.Table_Print();
+        game.Play_Turn();
+        game.Win_Check();
+        if(game.End_Game() != NULL) {
+            if(game.End_Game()) break;
+            else continue;
         }
-    
-        if(Player::checkDraw(table)){
-            
-            Player::printTable(table);
-            cout<<"Draw."<<endl;
-            initialize(table);
-            if(Q_terminer()) break;
-            continue;
+        game.Play_Turn();
+        game.Win_Check();
+        if(game.End_Game() != NULL) {
+            if(game.End_Game()) break;
+            else continue;
         }
         
-         // ------------------------------------ A
-        if(p1.checkWin(table) ) {
-           initialize(table);
-            win =p1.getname();
-            p1.score++;
-            Player::printTable(table);
-            cout<<p1.getname()<<" Win."<<endl;
 
-            if(Q_terminer()) break;
-            continue;
-        };
-       
-        
-        // ------------------------------------ B
-        while(true){
-            
-            cout<<p2.getname()<<" Where to play? ";cin>>position;
-            if( p2.play(table, position) ) break;
-          
-
-        }
-        if(p2.checkWin(table) )  {
-           initialize(table);
-            win =p2.getname();
-            p2.score++;
-            Player::printTable(table);
-            cout<<p2.getname()<<" Win."<<endl;
-
-            if(Q_terminer()) break;
-            continue;
-        };
-        
-        
         
     }
-    cout<<p1.getname()<<" score: "<<p1.score<<endl;
-    cout<<p2.getname()<<" score: "<<p2.score<<endl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
