@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "d:/Desktop/EMSI/Semestre 1/2___les langages de programmation/C++/Séance  TP/C++ TP Seance 8/XO Game",
-      "program": "d:/Desktop/EMSI/Semestre 1/2___les langages de programmation/C++/Séance  TP/C++ TP Seance 8/XO Game/build/Debug/outDebug",
+      "cwd": "d:/CODE/XO-Game",
+      "program": "d:/CODE/XO-Game/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

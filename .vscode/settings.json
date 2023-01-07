@@ -32,6 +32,7 @@
   ],
   "files.associations": {
     "typeinfo": "cpp",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "new": "cpp"
   }
 }
